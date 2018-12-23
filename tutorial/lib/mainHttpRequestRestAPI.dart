@@ -27,7 +27,7 @@ class HomePageState extends State<HomePage> {
     // print(response.body);
 
     List data = json.decode(response.body);
-    print(data[2]["title"]);
+    print(data[1]["title"]);
   }// Future??
 
   @override
