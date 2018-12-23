@@ -1,71 +1,43 @@
-import 'package:flutter/material.dart';
-import './TabBarNavigation/FirstPage.dart' as first;
-import './TabBarNavigation/SecondPage.dart'as second;
-import './TabBarNavigation/ThirdPage.dart' as third;
+import "dart:async";
+import "dart:convert";
 
-void main(){
-  runApp(
-    new MaterialApp(
-      home: new MyTabs()
-      )
-  );
+import "package:flutter/material.dart";
+import 'package:http/http.dart' as http;
+
+void main() => runApp(
+  new MaterialApp(
+    home: new HomePage(),
+    )
+);
+
+class HomePage extends StatefulWidget {
+  @override
+  HomePageState createState () => new HomePageState ();
 }
 
-class MyTabs extends StatefulWidget{
-  @override
-  MyTabsState createState() => new MyTabsState();
-}
+class HomePageState extends State<HomePage> {
 
-class MyTabsState extends State<MyTabs> with SingleTickerProviderStateMixin{
-
-  TabController controller; // TabController, initState, dispose 중요.!!
-
-  @override
-  void initState() {
-    super.initState();
-    controller = new TabController(vsync: this, length: 3);
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Pages"), 
-        backgroundColor:  Colors.deepOrange,
-        bottom: new TabBar(
-          controller: controller,
-          tabs: <Tab>[
-            new Tab(icon: new Icon(Icons.arrow_forward)),
-            new Tab(icon: new Icon(Icons.arrow_downward)),
-            new Tab(icon: new Icon(Icons.arrow_back)),
-          ],
-        ),
-        ),
-        bottomNavigationBar: new Material(
-          color: Colors.deepOrange,
-          child: new TabBar(
-            controller: controller,
-            tabs: <Tab>[
-            new Tab(icon: new Icon(Icons.arrow_forward)),
-            new Tab(icon: new Icon(Icons.arrow_downward)),
-            new Tab(icon: new Icon(Icons.arrow_back)),
-          ],
-          )
-        ),
-        body: new TabBarView(
-          controller: controller,
-          children: <Widget>[
-            new first.First(),
-            new second.Second(),
-            new third.Third()
-          ],
-        ),
+  Future<String> getData() async {
+    http.Response response = await http.get(
+      Uri.encodeFull("https://jsonplaceholder.typicode.com/posts"),
+      headers: {
+        "Accept": "application/json"
+      }
     );
-  }
+    // print(response.body);
+
+    List data = json.decode(response.body);
+    print(data[2]["title"]);
+  }// Future??
+
+  @override
+  Widget build (BuildContext context)
+  => new Scaffold(
+    body: new Center(
+      child: new RaisedButton(
+        child: new Text("Get data"),
+        onPressed: getData,
+      )
+    ),
+  );
 }
